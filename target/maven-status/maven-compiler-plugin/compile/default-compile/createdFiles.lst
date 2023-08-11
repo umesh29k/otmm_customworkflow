@@ -1,0 +1,6 @@
+com\opentext\custom\util\OTUtils.class
+com\opentext\custom\constant\Constants.class
+com\opentext\custom\exception\CustomException.class
+com\opentext\custom\job\step\AddWatermarkStep.class
+com\opentext\custom\job\BaseCustomAssetExpiry.class
+com\opentext\custom\job\step\RemoveWatermarkStep.class
