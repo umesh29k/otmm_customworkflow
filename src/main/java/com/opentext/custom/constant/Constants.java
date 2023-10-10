@@ -9,6 +9,8 @@ public class Constants {
     private Constants() {
     }
 
+    public static final String FREQUENCY_PROP = "frequency";
+    public static final String ASSETS_CONTEXT = "assets";
     public static final String JOB = "Job";
     public static final String DATA = "data";
     public static final String ASSET_IDS = "assetIds";

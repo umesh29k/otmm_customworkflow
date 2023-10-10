@@ -1,4 +1,4 @@
-package com.opentext.custom.job.step;
+package com.opentext.custom.job.step.watermark;
 
 import com.artesia.asset.selection.AssetIdsSelectionContext;
 import com.artesia.asset.services.AssetServices;
