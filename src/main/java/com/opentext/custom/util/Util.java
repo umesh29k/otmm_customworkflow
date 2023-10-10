@@ -1,6 +1,7 @@
 package com.opentext.custom.util;
 
 import com.artesia.common.exception.BaseTeamsException;
+import com.artesia.common.net.HostnameUtils;
 import com.artesia.security.SecuritySession;
 import com.artesia.security.session.services.LocalAuthenticationServices;
 import org.apache.commons.fileupload.disk.DiskFileItem;
@@ -23,7 +24,7 @@ import java.util.List;
 
 public class Util {
     private static final Log log = LogFactory.getLog(Util.class);
-    public static final String API_HOST = "http://192.168.29.27:11090/otmmapi/v6/";
+    public static final String API_HOST = "http://" + HostnameUtils.getHostname() + ":11090/otmmapi/v6/";
     private static RestTemplate restTemplate = new RestTemplate();
 
     public static String getLocalSessionDigest() {
