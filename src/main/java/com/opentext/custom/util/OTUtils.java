@@ -301,7 +301,6 @@ public class OTUtils {
             AssetDataLoadRequest dlr = new AssetDataLoadRequest();
             dlr.setLoadMetadata(false);
             asset = AssetServices.getInstance().retrieveAsset(new AssetIdentifier(assetId), dlr, securitySession);
-            asset.getImportJobId();
 
             log.info("update_rendition_step asset repository base location: " + repositoryBaseLoc);
             if (!Files.exists(new File(repositoryBaseLoc + TEMP_CONVERT).toPath())) {
