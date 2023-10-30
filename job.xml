@@ -1,0 +1,143 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:batch="http://www.springframework.org/schema/batch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/batch
+		http://www.springframework.org/schema/batch/spring-batch-3.0.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="transformer1_6459BeanV1" class="com.opentext.custom.job.step.CollectTranscodeStep" scope="prototype">
+        <property name="beanProperties">
+            <map>
+                <entry key="stepExecutionUserId" value=""/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="StageContentStep_19077BeanV1" class="com.opentext.server.job.step.transcode.StageContentStep" scope="prototype">
+        <property name="beanProperties">
+            <map>
+                <entry key="assetIds" value="{transcodeAssetIds}"/>
+                <entry key="renameToAscii" value="false"/>
+                <entry key="namedLocation" value="VIDEO_FILE_STAGING_AREA"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="RenameAssetContentsToAsciiStep_31275BeanV1" class="com.opentext.server.job.step.imprt.RenameAssetContentsStep" scope="prototype">
+        <property name="beanProperties">
+            <map>
+                <entry key="toAscii" value="true"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="LockAssetsStep_64643BeanV1" class="com.opentext.server.job.step.LockAssetsStep" scope="prototype">
+        <property name="beanProperties">
+            <map>
+                <entry key="assetIds" value="{assetIds}"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="SubJobStep_22739BeanV1" class="com.opentext.server.job.step.SubJobInitiatorStep" scope="prototype">
+        <property name="beanProperties">
+            <map>
+                <entry key="subJobDecider" value="importMDSubJobDecider"/>
+                <entry key="itemList" value="{assetIds}"/>
+                <entry key="dataSource" value="dataSource"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="ImportTransSubJobStep_39337BeanV1" class="com.opentext.server.job.step.imprt.ImportTransSubJobInitiatorStep" scope="prototype">
+        <property name="beanProperties">
+            <map>
+                <entry key="itemList" value="{assetIds}"/>
+                <entry key="dataSource" value="dataSource"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="UnlockAssetsStep_15423BeanV1" class="com.opentext.server.job.step.UnlockAssetsStep" scope="prototype">
+        <property name="beanProperties">
+            <map>
+                <entry key="assetIds" value="{assetIds}"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="RenameAssetContentsFromAsciiStep_30293BeanV1" class="com.opentext.server.job.step.imprt.RenameAssetContentsStep" scope="prototype">
+        <property name="beanProperties">
+            <map>
+                <entry key="renameToAscii" value="false"/>
+            </map>
+        </property>
+    </bean>
+
+    <batch:job id="transformeroneV1" parent="BaseJob">
+        <batch:step id="transformer1_6459V1" next="StageContentStep_19077V1">
+            <batch:description>transformer1</batch:description>
+            <batch:tasklet>
+                <bean class="com.opentext.server.job.common.Executor" scope="step">
+                    <property name="step" ref="transformer1_6459BeanV1"/>
+                </bean>
+            </batch:tasklet>
+        </batch:step>
+        <batch:step id="StageContentStep_19077V1" next="RenameAssetContentsToAsciiStep_31275V1">
+            <batch:description>Stage content</batch:description>
+            <batch:tasklet>
+                <bean class="com.opentext.server.job.common.Executor" scope="step">
+                    <property name="step" ref="stageAssetContent"/>
+                </bean>
+            </batch:tasklet>
+        </batch:step>
+        <batch:step id="RenameAssetContentsToAsciiStep_31275V1" next="LockAssetsStep_64643V1">
+            <batch:description>Rename import contents</batch:description>
+            <batch:tasklet>
+                <bean class="com.opentext.server.job.common.Executor" scope="step">
+                    <property name="step" ref="renameAssetContentsToAscii"/>
+                </bean>
+            </batch:tasklet>
+        </batch:step>
+        <batch:step id="LockAssetsStep_64643V1" next="SubJobStep_22739V1">
+            <batch:description>Lock assets</batch:description>
+            <batch:tasklet>
+                <bean class="com.opentext.server.job.common.Executor" scope="step">
+                    <property name="step" ref="lockAssets"/>
+                </bean>
+            </batch:tasklet>
+        </batch:step>
+        <batch:step id="SubJobStep_22739V1" next="ImportTransSubJobStep_39337V1">
+            <batch:description>Process Video and Audio Assets</batch:description>
+            <batch:tasklet>
+                <bean class="com.opentext.server.job.common.Executor" scope="step">
+                    <property name="step" ref="importMDSubJobInitiator"/>
+                </bean>
+            </batch:tasklet>
+        </batch:step>
+        <batch:step id="ImportTransSubJobStep_39337V1" next="UnlockAssetsStep_15423V1">
+            <batch:description>Transform assets</batch:description>
+            <batch:tasklet>
+                <bean class="com.opentext.server.job.common.Executor" scope="step">
+                    <property name="step" ref="importTransSubJobInitiator"/>
+                </bean>
+            </batch:tasklet>
+        </batch:step>
+        <batch:step id="UnlockAssetsStep_15423V1" next="RenameAssetContentsFromAsciiStep_30293V1">
+            <batch:description>Unlock assets</batch:description>
+            <batch:tasklet>
+                <bean class="com.opentext.server.job.common.Executor" scope="step">
+                    <property name="step" ref="unlockAssets"/>
+                </bean>
+            </batch:tasklet>
+        </batch:step>
+        <batch:step id="RenameAssetContentsFromAsciiStep_30293V1">
+            <batch:description>Rename import contents to original</batch:description>
+            <batch:tasklet>
+                <bean class="com.opentext.server.job.common.Executor" scope="step">
+                    <property name="step" ref="renameAssetContentsFromAscii"/>
+                </bean>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+</beans>
